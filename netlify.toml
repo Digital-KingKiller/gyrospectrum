@@ -1,0 +1,30 @@
+[functions]
+  included_files = ["!node_modules/@remotion/renderer/**/*", "!node_modules/@remotion/bundler/**/*", "!public/**/*"]
+  node_bundler = "esbuild"
+  
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Next.js requires the Netlify plugin
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Environment variables (set in Netlify dashboard)
+# NEXT_PUBLIC_SUPABASE_URL
+# NEXT_PUBLIC_SUPABASE_ANON_KEY
+# GROQ_API_KEY
+# RESEND_API_KEY
+# LINKEDIN_CLIENT_ID
+# LINKEDIN_CLIENT_SECRET
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
