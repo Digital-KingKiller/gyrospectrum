@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, Suspense } from 'react'
-import { Linkedin, Check, AlertCircle, Send, Link as LinkIcon, ExternalLink, Building2, User, Sparkles, Calendar, Clock } from 'lucide-react'
+import { Linkedin, Facebook, Instagram, Check, AlertCircle, Send, Link as LinkIcon, ExternalLink, Building2, User, Sparkles, Calendar, Clock } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 
 interface Organization {
@@ -20,8 +20,11 @@ interface ScheduledPost {
 function SocialPageContent() {
     const searchParams = useSearchParams()
     const [isConnected, setIsConnected] = useState(false)
+    const [isFbConnected, setIsFbConnected] = useState(false)
+    const [isIgConnected, setIsIgConnected] = useState(false)
     const [organizations, setOrganizations] = useState<Organization[]>([])
     const [selectedUrn, setSelectedUrn] = useState<string>('')
+    const [selectedPlatform, setSelectedPlatform] = useState<'linkedin' | 'facebook' | 'instagram'>('linkedin')
 
     // Post State
     const [postText, setPostText] = useState('')
@@ -37,11 +40,17 @@ function SocialPageContent() {
     const [scheduledPosts, setScheduledPosts] = useState<ScheduledPost[]>([])
 
     useEffect(() => {
-        if (searchParams.get('connected') === 'linkedin') {
+        const connected = searchParams.get('connected')
+        if (connected === 'linkedin') {
             setIsConnected(true)
             fetchOrganizations()
-            fetchScheduledPosts()
+        } else if (connected === 'meta') {
+            setIsFbConnected(true)
+            setIsIgConnected(true)
+            setSelectedPlatform('facebook')
         }
+        
+        fetchScheduledPosts()
     }, [searchParams])
 
     const fetchOrganizations = async () => {
@@ -70,6 +79,10 @@ function SocialPageContent() {
 
     const handleConnect = () => {
         window.location.href = '/api/auth/linkedin/init'
+    }
+
+    const handleMetaConnect = () => {
+        window.location.href = '/api/auth/meta/init'
     }
 
     const handleGenerateAi = async () => {
@@ -103,13 +116,16 @@ function SocialPageContent() {
         const isScheduling = !!scheduleDate
 
         try {
-            const endpoint = isScheduling ? '/api/social/schedule' : '/api/social/linkedin/post'
+            const endpoint = isScheduling 
+                ? '/api/social/schedule' 
+                : (selectedPlatform === 'linkedin' ? '/api/social/linkedin/post' : '/api/social/meta/post')
+            
             const body = {
                 text: postText,
                 url: postUrl || undefined,
                 authorUrn: selectedUrn || undefined,
                 scheduledFor: scheduleDate || undefined,
-                platform: 'linkedin'
+                platform: selectedPlatform
             }
 
             const res = await fetch(endpoint, {
@@ -156,47 +172,130 @@ function SocialPageContent() {
                 </p>
             </div>
 
-            {/* Connection Card */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-100 rounded-xl">
-                            <Linkedin className="w-8 h-8 text-blue-700" />
+            <div className="grid grid-cols-1 gap-6">
+                {/* LinkedIn Card */}
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-blue-100 rounded-xl">
+                                <Linkedin className="w-8 h-8 text-blue-700" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800">LinkedIn</h3>
+                                <p className="text-slate-500">Connect to Personal Profile & Pages</p>
+                            </div>
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold text-slate-800">LinkedIn</h3>
-                            <p className="text-slate-500">Connect to Personal Profile & Pages</p>
-                        </div>
-                    </div>
-                    <div>
-                        {isConnected ? (
-                            <div className="flex gap-2">
-                                <span className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium">
-                                    <Check className="w-4 h-4" />
-                                    Connected
-                                </span>
+                            {isConnected ? (
+                                <div className="flex gap-2">
+                                    <span className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium">
+                                        <Check className="w-4 h-4" />
+                                        Connected
+                                    </span>
+                                    <button
+                                        onClick={handleConnect}
+                                        className="px-4 py-2 text-sm bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors"
+                                    >
+                                        Reconnect
+                                    </button>
+                                </div>
+                            ) : (
                                 <button
                                     onClick={handleConnect}
-                                    className="px-4 py-2 text-sm bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors"
+                                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold transition-all shadow-md hover:shadow-lg"
                                 >
-                                    Reconnect
+                                    <LinkIcon className="w-4 h-4" />
+                                    Connect Account
                                 </button>
-                            </div>
-                        ) : (
-                            <button
-                                onClick={handleConnect}
-                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold transition-all shadow-md hover:shadow-lg"
-                            >
-                                <LinkIcon className="w-4 h-4" />
-                                Connect Account
-                            </button>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                {/* Main Interface */}
-                {isConnected && (
-                    <div className="mt-8 pt-8 border-t border-slate-100 animate-in fade-in slide-in-from-top-4 duration-500">
+                {/* Facebook / Instagram Card */}
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-4">
+                            <div className="flex -space-x-2">
+                                <div className="p-3 bg-blue-100 rounded-xl border-2 border-white relative z-10">
+                                    <Facebook className="w-8 h-8 text-blue-600" />
+                                </div>
+                                <div className="p-3 bg-pink-100 rounded-xl border-2 border-white relative z-0">
+                                    <Instagram className="w-8 h-8 text-pink-600" />
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800">Meta Business</h3>
+                                <p className="text-slate-500">Connect to Facebook Pages & Instagram</p>
+                            </div>
+                        </div>
+                        <div>
+                            {isFbConnected || isIgConnected ? (
+                                <div className="flex gap-2">
+                                    <span className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium">
+                                        <Check className="w-4 h-4" />
+                                        Connected
+                                    </span>
+                                    <button
+                                        onClick={handleMetaConnect}
+                                        className="px-4 py-2 text-sm bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors"
+                                    >
+                                        Reconnect
+                                    </button>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={handleMetaConnect}
+                                    className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 font-bold transition-all shadow-md hover:shadow-lg"
+                                >
+                                    <LinkIcon className="w-4 h-4" />
+                                    Connect Meta
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Interface */}
+            {(isConnected || isFbConnected || isIgConnected) && (
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                    <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <Send className="w-5 h-5 text-blue-600" />
+                        Create New Post
+                    </h3>
+
+                    {/* Platform Selector */}
+                    <div className="mb-6 flex gap-4">
+                        {isConnected && (
+                            <button
+                                onClick={() => setSelectedPlatform('linkedin')}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${selectedPlatform === 'linkedin' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                            >
+                                <Linkedin className="w-4 h-4" />
+                                LinkedIn
+                            </button>
+                        )}
+                        {isFbConnected && (
+                            <button
+                                onClick={() => setSelectedPlatform('facebook')}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${selectedPlatform === 'facebook' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                            >
+                                <Facebook className="w-4 h-4" />
+                                Facebook
+                            </button>
+                        )}
+                        {isIgConnected && (
+                            <button
+                                onClick={() => setSelectedPlatform('instagram')}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${selectedPlatform === 'instagram' ? 'bg-pink-100 text-pink-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                            >
+                                <Instagram className="w-4 h-4" />
+                                Instagram
+                            </button>
+                        )}
+                    </div>
+
                         {/* 1. Identity Selector (Only show if orgs exist) */}
                         {organizations.length > 0 && (
                             <div className="mb-6">
@@ -331,8 +430,6 @@ function SocialPageContent() {
                         </div>
                     </div>
                 )}
-            </div>
-
             {/* Scheduled Posts List */}
             {scheduledPosts.length > 0 && (
                 <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">

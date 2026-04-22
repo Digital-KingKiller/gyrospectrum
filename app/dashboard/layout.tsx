@@ -12,7 +12,9 @@ import {
     LogOut,
     GitBranch,
     Share2,
-    Video
+    Video,
+    Megaphone,
+    Headset
 } from 'lucide-react'
 
 interface DashboardLayoutProps {
@@ -23,9 +25,11 @@ const navigation = [
     { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Business', href: '/dashboard/business', icon: Building2 },
     { name: 'Competitors', href: '/dashboard/competitors', icon: Target },
+    { name: 'Campaigns', href: '/dashboard/campaigns', icon: Megaphone },
     { name: 'Content', href: '/dashboard/content', icon: FileText },
     { name: 'Video', href: '/dashboard/video', icon: Video },
     { name: 'Social', href: '/dashboard/social', icon: Share2 },
+    { name: 'Voice Agents', href: '/dashboard/voice', icon: Headset },
     { name: 'Leads', href: '/dashboard/leads', icon: Users },
     { name: 'Bookings', href: '/dashboard/bookings', icon: Calendar },
     { name: 'Workflows', href: '/dashboard/workflows', icon: GitBranch },
