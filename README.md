@@ -209,4 +209,4 @@ MIT
 
 ## Support
 
-For questions and support, contact us at support@gyrospectrum.com
+For questions and support, contact us at cyberb4rtz7@gmail.com
