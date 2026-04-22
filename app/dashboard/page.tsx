@@ -10,7 +10,11 @@ import {
     Calendar,
     MessageSquare,
     ArrowUpRight,
-    ArrowDownRight
+    ArrowDownRight,
+    Megaphone,
+    Headset,
+    Share2,
+    Video
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -251,25 +255,54 @@ export default function DashboardPage() {
                         <h3 className="text-xl font-bold text-slate-800 mb-4">Quick Actions</h3>
                         <div className="space-y-3">
                             <Link
-                                href="/dashboard/competitors"
+                                href="/dashboard/campaigns"
                                 className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
                             >
-                                <Target className="w-5 h-5 text-blue-600" />
-                                <span className="font-medium text-slate-700">Analyze Competitors</span>
+                                <Megaphone className="w-5 h-5 text-blue-600" />
+                                <div>
+                                    <span className="font-medium text-slate-700 block">Launch Campaign</span>
+                                    <span className="text-xs text-slate-400">AI-powered multi-channel plan</span>
+                                </div>
                             </Link>
                             <Link
                                 href="/dashboard/content"
                                 className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-green-300 hover:bg-green-50 transition-colors"
                             >
                                 <FileText className="w-5 h-5 text-green-600" />
-                                <span className="font-medium text-slate-700">Generate Content</span>
+                                <div>
+                                    <span className="font-medium text-slate-700 block">Generate Content</span>
+                                    <span className="text-xs text-slate-400">SEO-optimized posts</span>
+                                </div>
                             </Link>
                             <Link
-                                href="/dashboard/leads"
+                                href="/dashboard/social"
+                                className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-pink-300 hover:bg-pink-50 transition-colors"
+                            >
+                                <Share2 className="w-5 h-5 text-pink-600" />
+                                <div>
+                                    <span className="font-medium text-slate-700 block">Publish to Social</span>
+                                    <span className="text-xs text-slate-400">LinkedIn, Facebook, Instagram</span>
+                                </div>
+                            </Link>
+                            <Link
+                                href="/dashboard/voice"
                                 className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-purple-300 hover:bg-purple-50 transition-colors"
                             >
-                                <Users className="w-5 h-5 text-purple-600" />
-                                <span className="font-medium text-slate-700">View Leads</span>
+                                <Headset className="w-5 h-5 text-purple-600" />
+                                <div>
+                                    <span className="font-medium text-slate-700 block">Voice Agents</span>
+                                    <span className="text-xs text-slate-400">Inbound &amp; outbound calling</span>
+                                </div>
+                            </Link>
+                            <Link
+                                href="/dashboard/video"
+                                className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-orange-300 hover:bg-orange-50 transition-colors"
+                            >
+                                <Video className="w-5 h-5 text-orange-600" />
+                                <div>
+                                    <span className="font-medium text-slate-700 block">Generate Video</span>
+                                    <span className="text-xs text-slate-400">AI Reels &amp; Shorts</span>
+                                </div>
                             </Link>
                         </div>
                     </div>
